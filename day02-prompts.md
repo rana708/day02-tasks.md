@@ -1,116 +1,88 @@
 # day02-prompts.md
 
-Framework 
-1. Role
-2. Task
-3. Context
-4. Constraints
-5. Format
-6. Examples
-7. Success criteria
-
-## Prompt #1
-The hypothetical code (def get_user(user_id):
-    query = "SELECT * FROM users WHERE id = " + user_id
-    result = db.execute(query)
-    return result[0])
-Original:
-review this code:
-def get_user(user_id):
-    query = "SELECT * FROM users WHERE id = " + user_id
-    result = db.execute(query)
-    return result[0]
-
-What is missing:
-Role — There is no specification of the reviewer’s role or expertise (junior, senior, security-focused, etc.).
-Context — There is no information about whether the function is running in production or where `user_id` comes from.
-Constraints — There is no clear scope (should the review focus on security, performance, style, or something else?).
-Format — There is no specified format for the response.
-Examples — There is no definition of what should be considered **“high risk”** versus a lower-severity issue.
-Success Criteria — There is no definition of what makes the response **“complete” or “successful.”**
-(The Task is implicitly present: “review this code.”)
-
-The complete version:
-Role: You are a senior Python backend engineer doing a security-focused code review.
-Task: Review the function below and identify bugs, security issues, and bad practices.
-Context: This function runs in a production web app that handles user authentication data; user_id comes directly from an HTTP request parameter.
-Constraints: Focus only on correctness, security, and error handling — not naming/style.
-Format: Return a numbered list. For each issue: [Severity: High/Medium/Low] Issue → Why it matters → Suggested fix (code snippet).
-Examples/Criteria: A "High" severity issue is one that could cause a security breach or crash in production.
-Success criteria: I should be able to copy your fixes directly into the file.
-Code:
-def get_user(user_id):
-    query = "SELECT * FROM users WHERE id = " + user_id
-    result = db.execute(query)
-    return result[0]
-
-Original output (summary):
-The response came in the form of a free-form report with two headings: "Issues Identified" and "Recommended Solution":
-- It classified the SQL Injection vulnerability as "Critical," explaining that an attacker could submit `'1 OR 1=1'`.
-- It identified the potential for an `IndexError` if the query returned no results.
-- It noted the lack of validation regarding the type or existence of `user_id`.
-- Finally, it provided a corrected version of the code using a parameterized query and an `if not result` check, while noting that the placeholder (e.g., `%s` vs. `?`) might vary depending on the library used.
-- The response did not include explicit severity levels, nor did it clearly separate each issue from its corresponding solution.
-
-Rewritten output (summary):
-The response came as a strictly numbered list in the exact required format:
-[High] SQL Injection — with a detailed explanation of the exploitation scenario (data dumping, authentication bypass, and data modification) + a code fix.
-[High] Unhandled IndexError — essentially the same issue, but with a clearer connection to the request thread crashing and returning HTTP 500.
-[Medium] Unvalidated Input Type — additional detail: distinguish between the case where user_id is None (causing TypeError) and the case where the value is invalid when converting to int (causing ValueError), and 
-provide a separate fix for each case.
-At the end, provide one final consolidated function that integrates all three solutions and is ready to copy and paste directly.
-
-The difference:
-Immediate Copy-Paste Usability: Only the completed version provided one final function that was ready to paste directly into the project (the “Success criteria”), whereas the original provided the solution in one piece without fully consolidating the function.
-Accuracy in Error Handling: The completed version explicitly distinguished between the None case and the failure to convert the value to int (ValueError/TypeError handled separately). This more precise detail appeared because the Context clarified that the value comes from an HTTP request. The original version handled the issue more generally.
-Ease of Quick Review: The required format (Severity → Why → Fix) made it easier to identify the priority of each issue immediately, whereas the original relied on the paragraph order and mentioned the word “Critical” only once at the beginning.
-Note: The difference was not in “discovering additional issues” — both versions identified exactly the same three issues (SQL injection, IndexError, and type validation), because this code follows a classic pattern that the model could recognize even without the additional context. The real difference was in organization, detailed precision, and final usability, rather than the depth of the core analysis.
-
-
-
-
-## Prompt #2
-(The hypothetical project used for the experiment: csv2json — a Python CLI tool that converts CSV to JSON, used by an internal data team, maintained by a single person, with a private repository.)
+## Prompt #1 المثال الأول: مراجعة كود برمجي (Code Review)
 
 Original:
-write documentation for the project
-
+❌ الأمر البسيط (القديم):
+"راجع هذا الكود: def get_user(user_id): query = "SELECT * FROM users WHERE id = " + user_id result = db.execute(query) return result[0]"
 What is missing:
-Role — There is no specification of the writer’s role or identity (technical writer? Who is the target audience?).
-Context — There is no project name or description of what it does (the model doesn’t know how to document a project that hasn’t been provided).
-Format — There is no specification of the document format (README? Wiki? API docs?).
-Examples — There is no definition of what counts as “good” documentation in this context.
-Success Criteria — There is no clear definition of what exactly is required for the documentation to be considered complete.
-Constraints — These are partially implied but not explicitly defined: Should the documentation be written for developers or beginners?
-(Task موجود ضمنيًا: "write documentation")
+المشكلة: لم نحدد دور المراجع، السياق، القيود، أو شكل الإجابة المطلوب.
+
+Original output (summary)
+
+هذا الكود يعاني من مشكلتين رئيسيتين: واحدة أمنية خطيرة، وأخرى منطقية قد تسبب توقف الكود (Crash).
+1. الثغرة الأمنية (SQL Injection)
+المشكلة: دمج المتغير user_id مباشرة في نص الاستعلام عبر concatenation (+) يجعل التطبيق عرضة لثغرات حقن SQL (SQL Injection). إذا قام المستخدم بتمرير نص خبيث مثل '1 OR 1=1'، سيمكنه التلاعب بشرط الاستعلام وقراءة جميع بيانات الجدول أو تعديلها.
+الحل: استخدام الاستعلامات المجهزة المعتمدة على المعلمات (Parameterized Queries / Prepared Statements) ليفصل المحرك بين كود SQL والبيانات الممررة.
+
+2. خطأ وقت التشغيل (IndexError / Unhandled Exception)
+المشكلة: عند تنفيذ الاستعلام عبر db.execute(query)، إذا لم يوجد مستخدم بالمعرف user_id الممرر، ستكون النتيجة مصفوفة فارغة []. الوصول إلى العنصر الأول result[0] مباشرة سيتسبب في إلقاء خطأ من نوع IndexError وتوقف البرنامج.
+الحل: التحقق أولاً من وجود عناصر داخل result قبل محاولة الوصول إلى العنصر الأول.
+The complete version:
+ أنت مهندس برمجيات متخصص في أمان البيانات (Security).   راجع الدالة البرمجية واكتشف الأخطاء والثغرات الأمنية.
+الدالة تعمل في نظام حقيقي، ورمز المستخدم user_id يأتي مباشرة من رابط الموقع.
+ركز فقط على الأمان وصحة التنفيذ والتعامل مع الأخطاء (تجاهل أسماء المتغيرات والشكل).
+ قائمة رقمية لكل مشكلة: [مستوى الخطورة: عالي/متوسط/منخفض] المشكلة ← سبب أهميتها ← الحل المباشر.
+أريد حلولاً جاهزة للنسخ واللصق فوراً داخل المشروع.
+Rewritten output (summary)
+
+[مستوى الخطورة: عالي جداً] ثغرة حقن استعلامات إس كيو إل (SQL Injection)
+سبب الأهمية: بما أن المتغير user_id يأتي مباشرة من رابط الموقع (URL Parameter) ويُدمج نصياً مع الاستعلام، يمكن لأي مهاجم الملاحة في الرابط وتمرير نصوص خبيثة مثل 1 OR 1=1 للوصول لقاعدة البيانات كاملة، أو استخدام تقنيات متقدمة لتعديل وحذف البيانات والتجاوز التام لنظام الصلاحيات.
+الحل المباشر: تمرير القيم عبر الاستعلامات المعلمية (Parameterized Queries) ليصل القيمة لمحرّك قاعدة البيانات كبيانات مقيدة وليست كجزء من أصل أمر SQL.
+[مستوى الخطورة: متوسط] عدم معالجة الحالات الحدية واستثناء النتيجة الفارغة (IndexError)
+سبب الأهمية: عند طلب مستخدم غير موجود بالمعرف الممرر في الرابط، تُرجع قاعدة البيانات مصفوفة فارغة []. محاولة الوصول المباشر للعنصر الأول result[0] تؤدي لانهيار التطبيق فوراً بخطأ IndexError وإرجاع استجابة Server Error (500) للمستخدم.
+الحل المباشر: التحقق من وجود نتائج أولاً وإرجاع None أو كائن فارغ في حال عدم العثور على المستخدم.
+[مستوى الخطورة: متوس] غياب التحقق من نوع ومدخلات المستخدم (Typecasting / Input Validation)
+سبب الأهمية: استقبال المدخل المباشر من الرابط كنص دون التأكد من طبيعته (كأن يتوقع النظام رقم صحيح Integer) قد يتسبب في أخطاء غير متوقعة أو ثغرات تتبع منطق العمل (Type Confusion / Logic Flaws).
+الحل المباشر: تحويل القيمة صراحة إلى رقم صحيح int(user_id) والتعامل مع الخطأ في حال كانت القيمة غير قابلة للتحويل.
+The difference:
+مستوى الأمان: الاستجابة الأولى عالجت الثغرة الأساسية فقط، بينما الثانية أضافت خطوة أمان إضافية وهي التأكد من أن رمز المستخدم هو رقم صحيح فعلاً (int(user_id)) لتفادي المدخلات الخاطئة من الرابط.
+الالتزام بالشروط: الأولى كانت إجابة عامة، بينما الثانية التزمت بالدور (مهندس أمان) وبصيغة محددة (مستوى الخطورة ← السبب ← الحل).
+جاهزية الكود: كود الاستجابة الثانية أكثر حماية وأجهز للنسخ واللصق فوراً في نظام حقيقي.
+
+
+
+## Prompt #2 المثال الثاني: كتابة توثيق لمشروع (Project Documentation)
+
+Original:
+❌ الأمر البسيط (القديم):
+"اكتب توثيقاً للمشروع"
+What is missing:
+المشكلة: الذكاء الاصطناعي لا يعرف ما هو المشروع، لمن يكتب، وما هي تفاصيله
+Original output (summary):
+يبدو أنك لم ترفق كود المشروع أو تفاصيله!
+يرجى تزويدي بالكود، أو إعطائي نبذة عن المشروع (مثل: اسم المشروع، التقنيات المستخدمة، الوظائف الرئيسية، والهدف منه)، وسأقوم بكتابة توثيق متكامل وشامل (Documentation / Readme) فوراً.
 
 The complete version:
-Role: You are a technical writer who specializes in beginner-friendly documentation for non-programmers.
-Task: Write a README.md for this project.
-Context: The project is "csv2json" — a Python command-line tool that converts CSV files into JSON. It's used internally by a small data team. The reader has likely never used a command line/terminal before.
-Constraints: Assume zero programming knowledge. Briefly explain what a "terminal" is before using it. Avoid jargon. Keep the whole thing under 400 words.
-Format: README.md with these sections: What is this? / Installation / How to use it / Example.
-Examples/Criteria: Success means a non-technical person could follow every step without getting stuck or needing to Google anything extra.
-Success criteria: The text should be ready to paste directly into README.md with no further editing.
-
-Original output (summary):
-The response was provided as a very generic README filled with unrealistic placeholders: a generic title, “Project Documentation,” a generic description, “[core functionality],” and standard installation steps (git clone, pip install -r requirements.txt) without explaining any terminology. It implicitly assumed that the reader was a programmer who already knew how to use Git and the terminal. It also included generic sections such as “Contributing” and “License” that were not requested and were unrelated to the actual context (because no real context had been provided in the first place).
+ أنت كاتب تقني تشرح الأشياء المعقدة للمبتدئين.
+اكتب ملف README.md للمشروع.
+ المشروع اسمه csv2json وهو أداة تحول ملفات CSV إلى JSON، ويستخدمه فريق بيانات صغير.
+افترض أن القارئ لا يفهم في البرمجة إطلاقاً، اشرح ماهية "موجه الأوامر Terminal" ببساطة، ولا تتجاوز 400 كلمة.
+ملف README يحتوي على الأقسام: ما هذا؟ / التثبيت / طريقة الاستخدام / مثال.
+ يستطيع أي شخص غير تقني اتباع الخطوات وتطبيقها بدون مساعدة.
 
 Rewritten output (summary):
-The response was provided as a complete README specifically tailored to `csv2json`:
-* **“What is this?”** explains the tool in simple language, comparing CSV to an Excel file and JSON to a data format.
-* **“Installation”** explains what the terminal is before asking the reader to use it, and adds a verification step (`python --version`) before anything else.
-* **“How to use it”** provides simple numbered steps: place the file, enter the command, and find the resulting output.
-* **“Example”** includes a realistic example with a `sales.csv` file and an actual `sales.json` output.
-* It ends with **“Stuck? Ask in the #data-team Slack channel”**, providing a clear support path for readers who are not technically experienced.
+# csv2json
 
+## ما هذا؟
+هل لديك جدول بيانات مثل **Excel** وتحتاج إلى تحويله إلى صيغة يفهمها المبرمجون والمواقع الإلكترونية تُسمى **JSON**؟ 
+هذه الأداة البسيطة تُنجز لك هذه المهمة بنقرة زر واحدة! كل ما عليك فعله هو إعطاؤها ملف CSV (جدول)، وستقوم هي بتحويله فوراً إلى ملف JSON جاهز للاستخدام
+## ما هو "موجه الأوامر" (Terminal)؟
+تخيل أن كمبيوترك منزل. استخدام الفأرة والنقر على الأيقونات يشبه فتح الأبواب بيديك. أما **موجه الأوامر (Terminal)**، فهو مثل شاشة سحرية تكتب فيها اسم الغرفة التي تريد فتحها فتفتح فوراً!
+هو نافذة سوداء أو بيضاء صغيرة، تكتب فيها أوامر نصية بسيطة ليتنفذ ما تريد بسرعة وبدون الحاجة لفتح برامج ثقيلة.
+* **على ويندوز:** ابحث في القائمة عن `Command Prompt` أو `cmd`.
+* **على ماك (Mac):** ابحث في التطبيقات عن `Terminal`.
+## التثبيت
+قبل أن تبدأ، تأكد من تثبيت لغة **Python** على جهازك (إذا لم تكن مثبتة، حملها من موقع [python.org](https://www.python.org)).
+1. افتح نافذة **Terminal** على جهازك.
+2. انسخ الأمر التالي والصقه داخل النافذة، ثم اضغط زر **Enter**:
+3. ```bash
+pip install csv2json
 
 The difference:
-Real Content, Not Placeholders: The original couldn’t write about a project that wasn’t provided, so it used [core functionality] instead of an actual explanation. The completed version, thanks to the Context, wrote an accurate and specific description of csv2json.
+الاستجابة الأولى: كانت مجرد سؤال بطلب فيه تفاصيل مشروعك عشان أقدر أساعدك.
+الاستجابة الثانية: هي التوثيق الفعلي جاهز للنسخ (ملف README بسيط ومختصر، مشروح فيه الموجه البرمجي خطوة بخطوة وبأقل من 400 كلمة وبحجم خفيف جداً).
 
-Audience Consideration Changed the Level of Explanation Entirely: The original assumed the reader knew how to use git clone and pip install without explaining them. The completed version, because the Constraints specified non-programmers as the audience, explained what the terminal is and added a verification step before asking the reader to use something more complex.
-
-Ready for Immediate Publishing: The original contained placeholders and unnecessary sections (License, Contributing) that would need to be manually edited before publishing. The completed version, because of the “Success criteria,” was ready to paste directly into README.md without any additional changes.
 
 
 
