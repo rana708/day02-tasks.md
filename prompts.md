@@ -1,219 +1,147 @@
 ## My Templates
+# قوالب Prompts لمراجعة وتوثيق أعمال ضمان الجودة (QA)
 
-1. Feature Test Case Generation (Web & Mobile UI/UX)
 
-Purpose: Generate structured test cases for web and mobile features, including UI/UX, responsive layouts, and Arabic RTL alignment.
 
+## 1. مراجعة حالات الاختبار(Test Case Peer Review)
+**الغرض:** مراجعة حالات اختبار كتبتها  ، وإخراج ملاحظات منظمة وقابلة للتنفيذ قبل بدء التنفيذ.
+**Prompt:**
+"تصرّف كمراجع QA أول (Senior QA Reviewer). راجع حالات الاختبار التالية:
+حالات الاختبار: [هنا هددخل حالات الاختبار أو الصق الجدول]
+الميزة / المتطلب المفترض أن تغطيه: [أدخل الميزة أو الـ User Story]
+أخرج جدول Markdown بالأعمدة: رقم الحالة، المشكلة المكتشفة، نوع المشكلة (وضوح / تغطية ناقصة / تكرار / نتيجة متوقعة خاطئة / بيانات اختبار ناقصة)، الحل المقترح، والخطورة (عالية/متوسطة/منخفضة).
+ثم اذكر: (1) المتطلبات أو السيناريوهات التي لا تغطيها أي حالة اختبار، (2) الحالات الغامضة أو التي لا يستطيع مختبر آخر تكرارها."
+
+
+## 2. تحويل الملاحظات الخام إلى تقرير عيب رسمي (Bug Report)
+**الغرض:** تحويل ملاحظات غير منظمة إلى تقرير عيب واضح وجاهز للمطورين.
+**Prompt:*
+"تصرّف كأخصائي QA رئيسي (Lead QA Specialist). حوّل ملاحظات العيب الخام التالية إلى تقرير عيب رسمي:
+الملاحظات الخام: [هدخل الملاحظات الخام]
+البيئة (إن وُجدت): [هدخل نظام التشغيل، الجهاز/المتصفح، إصدار التطبيق]
+أخرج: عنوان العيب، الخطورة والأولوية (مع تبرير مختصر)، البيئة، الشروط المسبقة، خطوات إعادة الإنتاج (مرقمة ومحددة)، النتيجة المتوقعة مقابل الفعلية، وإرشادات الأدلة (لقطات الشاشة، السجلات، بيانات الشبكة المطلوبة).
+إذا كانت هناك معلومات ناقصة، اذكرها في قسم 'أسئلة للتأكيد' ولا تخمّن."
+
+
+## 3. مراجعة جودة تقرير العيب (Bug Report Quality Review)
+**الغرض:** فحص تقرير عيب موجود من حيث الاكتمال والوضوح قبل إرساله للمطورين.
+**Prompt:**
+"تصرّف كقائد QA (QA Lead) يراجع جودة تقرير عيب.
+تقرير العيب: [هدخل نص التقرير]
+قيّم: وضوح العنوان، إمكانية إعادة الإنتاج من الخطوات، صحة الخطورة/الأولوية، وجود تفاصيل البيئة والأدلة، ووضوح الفصل بين النتيجة المتوقعة والفعلية.
+قدّم: تقييمًا من 10، قائمة بالثغرات، نسخة محسّنة معاد كتابتها، وكلمات مفتاحية للبحث عن احتمال وجود تقرير مكرر في نظام التتبع."
+
+
+
+## 4. مراجعة المتطلبات / التذكرة (جاهزية الاختبار)
+**الغرض:** مراجعة متطلبات المهمة قبل تنفيذ السبرنت لاكتشاف الغموض ومعايير القبول الناقصة.
+**Prompt:**
+"تصرّف كمحلل QA يراجع تذكرة مهمة قبل الاختبار.
+تفاصيل المهمة: [هدخل مواصفات مهمة Jira/ERP]
+قدّم: المتطلبات الغامضة، الحالات الحدّية الناقصة، الافتراضات غير المذكورة، معايير القبول التي لا يمكن اختبارها، وأسئلة توضيحية للمطور أو مالك المنتج. حوّل معايير القبول إلى صيغة Given/When/Then عند الإمكان."
+
+---
+
+## 5. كتابة وثيقة خطة الاختبار (Test Plan)
+**الغرض:** صياغة وثيقة خطة اختبار منظمة لميزة أو إصدار.
+**Prompt:**
+
+"تصرّف كقائد QA يكتب خطة اختبار رسمية.
+الميزة / الإصدار: [أدخل الاسم ووصفًا مختصرًا]
+ملاحظات النطاق: [أدخل ما هو داخل النطاق وما هو خارجه]
+المنصات: [أدخل ويب / iOS / أندرويد / API]
+الجدول الزمني والفريق: [أدخل التواريخ وحجم الفريق]
+أخرج وثيقة بالأقسام التالية: الهدف، النطاق، منهج الاختبار، أنواع الاختبار، البيئات، معايير البدء والانتهاء، المخاطر وخطط التخفيف، المخرجات، والجدول الزمني. اجعلها موجزة ومناسبة لاعتماد أصحاب المصلحة."
+
+
+## 6. تحويل الملاحظات غير الرسمية إلى حالات اختبار موحدة
+**الغرض:** توثيق ملاحظات الاختبار الاستكشافي أو العشوائي في صورة حالات اختبار رسمية قابلة للتكرار.
+**Prompt:**
+"تصرّف كأخصائي توثيق QA. حوّل ملاحظات الاختبار غير الرسمية التالية إلى حالات اختبار موحدة:
+الملاحظات: [هدخل ملاحظات الاختبار الاستكشافي أو القائمة]
+الميزة: [هدخل اسم الميزة]
+أخرج جدول Markdown بالأعمدة: رقم الحالة، السيناريو، النوع (إيجابي/سلبي/حدّي)، الشروط المسبقة، خطوات الاختبار، النتيجة المتوقعة، بيانات الاختبار، والأولوية. نبّه على أي ملاحظة غامضة لدرجة لا تصلح معها لتكون حالة اختبار."
+
+
+
+## 7. مطابقة ملاحظات الإصدار مع نطاق الاختبار (Traceability)
+**الغرض:** التأكد من أن كل ما ورد في ملاحظات الإصدار له تغطية اختبار ونتائج موثقة.
+**Prompt:**
+"تصرّف كقائد QA يجهّز اعتماد الإصدار.
+ملاحظات الإصدار / سجل التغييرات: [هدخل قائمة التغييرات]
+التغطية المنفذة فعليًا: [أدخل مجموعات الاختبار أو أرقام الحالات التي تم تنفيذها]
+أنشئ جدول تتبّع بالأعمدة: عنصر التغيير، حالات الاختبار المرتبطة، حالة التغطية (مغطّى / جزئي / غير مغطّى)، مستوى الخطورة (عالٍ/متوسط/منخفض)، والإجراء الموصى به. لخّص الثغرات التي قد تمنع الإصدار."
+
+
+## 8. سجل إعادة الاختبار والتحقق من الإصلاح (Retest Record)
+**الغرض:** توثيق التحقق من إصلاح عيب، بما في ذلك فحص الانحدار (Regression) حول الإصلاح.
+**Prompt:**
+"تصرّف كمهندس QA يوثّق إعادة اختبار عيب.
+العيب الأصلي: [هدخل عنوان العيب ووصفه]
+ملاحظات المطور / الـ PR: [أدخل ملخص الإصلاح]
+نتائج إعادة الاختبار: [أدخل ما اختبرته وما حدث]
+أخرج سجل تحقق يتضمن: خطوات إعادة الاختبار المنفذة، البيئات المختبرة، النتيجة (نجاح/فشل)، الحالات الحدّية التي جرّبتها، المناطق المجاورة التي تم فحصها، الحالة النهائية (مغلق / أُعيد فتحه)، وتعليق ختامي قصير للتذكرة."
+
+
+## 9. تقرير حالة الـ QA اليومي
+**الغرض:** تحويل أرقام الاختبار الخام إلى ملخص تنفيذي واضح لأصحاب المصلحة.
+**Prompt:**
+"تصرّف كأخصائي QA. نسّق تقدّم الاختبار اليومي التالي في تقرير احترافي:
+الميزة المختبرة: [أدخل الميزة/الوحدة]
+إجمالي المنفّذ: [الرقم] | نجح: [الرقم] | فشل: [الرقم] | معطّل: [الرقم]
+العيوب الحرجة/العالية المسجلة: [أدخل عناوين العيوب أو أرقامها]
+نسّق التقرير ليناسب Slack/البريد/تعليق ERP، ويشمل: الملخص التنفيذي، المعوقات الحالية، مستوى الخطر، والخطوات التالية."
+
+
+## 10. تقرير ملخص الدورة والدروس المستفادة
+**الغرض:** توثيق نتيجة دورة اختبار وتسجيل التحسينات للمرة القادمة.
+**Prompt:**
+"تصرّف كقائد QA يكتب ملخصًا ختاميًا لدورة الاختبار.
+الدورة / الإصدار: [أدخل الاسم]
+بيانات النتائج: [أدخل إحصائيات التنفيذ، عدد العيوب حسب الخطورة، المشاكل المفتوحة]
+الملاحظات: [أدخل ما سار بشكل جيد وما لم يسر جيدًا]
+أخرج: نظرة عامة، التغطية المحققة، ملخص العيوب، المخاطر المفتوحة، توصية Go/No-Go مع التبرير، وقسم الدروس المستفادة (ثغرات العملية، أنماط العيوب المتكررة، تحسينات مقترحة)."
+
+
+
+
+
+قوالب Prompts للمراجعة والتوثيق
+
+1. توثيق Endpoint أو API
+الغرض: إنتاج توثيق واضح ومنظم لنقطة نهاية (Endpoint) أو API من الكود أو المواصفات، ليستخدمه المطورون والمختبرون.
 Prompt:
-
-"Act as a Senior QA Tester. Generate a comprehensive set of test cases for the following feature:
-
-Feature Description / Specs: [INSERT FEATURE OR USER STORY HERE, e.g., Mobile Login & OTP Verification / Shopping Cart Checkout] Platform: [Web Control Panel / Mobile App (iOS & Android)]
-
-Output a Markdown table with columns: Test ID, Scenario, Type (Positive/Negative/Edge), Pre-conditions, Test Steps, Expected Result, Test Data Needed, and Priority. Ensure coverage for input validation, edge cases, cross-device responsiveness, and Arabic RTL layout alignment."
+"تصرّف كمهندس QA (QA Engineer) يكتب توثيقًا تقنيًا. وثّق الـ Endpoint التالي:
+الغرض من الـ Endpoint: [INSERT: مثال: تحديث الملف الشخصي] الرابط والـ Method: [INSERT: مثال: PUT /api/v1/profile] الكود أو المواصفات المتاحة: [INSERT: الصق الكود أو الـ Schema أو الوصف] الجمهور المستهدف: [INSERT: مطورون / مختبرون / عملاء خارجيون]
+أخرج توثيقًا بالأقسام التالية: وصف مختصر، الـ Method والرابط، المعاملات (Parameters) مع النوع وهل هي إلزامية، شكل الـ Request مع مثال، شكل الـ Response مع مثال، أكواد الحالة (Status Codes) وأخطاؤها المحتملة، متطلبات الصلاحيات (Authentication)، وملاحظات أو قيود. إذا كانت هناك معلومة غير موجودة في المدخلات، اكتب 'غير محدد — يحتاج تأكيد' ولا تخمّن."
 
 
-
-
-
-2. Standard Bug Report Formulation
-
-Purpose: Transform messy notes, logs, or quick observations into a clear, developer-ready bug report.
-
+2. فحص الروابط في التوثيق
+الغرض: مراجعة مستند توثيق للعثور على الروابط المشبوهة أو المكسورة أو غير المتسقة، وإخراج قائمة جاهزة للتصحيح.
 Prompt:
-
-"Act as a Lead QA Specialist. Convert my raw defect notes into a formal, highly detailed bug report:
-
-Raw Defect Notes: [INSERT RAW NOTES, E.G., 'Button on Arabic mode bleeds out of screen on iPhone 13 or shift handover fails when clicking submit']
-
-Generate a bug report with:
-
-Defect Title: (Clear, concise summary)
-Severity & Priority: (With brief justification)
-Environment: (OS, Device/Browser, App Version)
-Pre-conditions:
-Steps to Reproduce: (Numbered, precise, deterministic steps)
-Expected Result vs Actual Result:
-Visual / Console Evidence Guidance: (What screenshots, network payload, or console logs developers need)"
+"تصرّف كمهندس QA يراجع وثائق. افحص المستند التالي بحثًا عن مشاكل الروابط:
+نص المستند: [INSERT: الصق نص المستند بما فيه الروابط] نطاق الروابط الداخلية المعتمد: [INSERT: مثال: docs.company.com]
+أخرج جدولًا بالأعمدة: رقم، الرابط، الموضع في المستند، نوع المشكلة المحتملة (صيغة خاطئة / رابط داخلي بنطاق قديم / رابط مكرر / نص الرابط لا يطابق وجهته / رابط مشبوه)، والتعديل المقترح. ثم أضف قائمة مراجعة يدوية للروابط التي يجب التحقق منها بالفتح الفعلي. ملاحظة: لا تدّعِ أن رابطًا يعمل أو لا يعمل إلا إذا كان لديك أداة تصفح؛ اكتفِ بالمشاكل الظاهرة من النص."
 
 
-
-
-
-3. Defect Retesting & Verification Charter
-
-Purpose: Create a precise verification workflow for retesting fixed bugs and checking for regression around the fix.
-
+3. تحسين نص توثيق موجود
+الغرض: إعادة صياغة توثيق موجود ليصبح أوضح وأكثر اتساقًا وأسهل للقراءة بدون تغيير المعنى التقني.
 Prompt:
-
-"Act as a QA Engineer conducting bug retesting. I am verifying a resolved issue:
-
-Original Bug: [INSERT ORIGINAL BUG TITLE & DESCRIPTION] Developer Fix Notes / PR: [INSERT DEVELOPER NOTES OR CODE FIX SUMMARY]
-
-Provide:
-
-Exact Retesting Steps to confirm the fix across target environments.
-Boundary & Edge Conditions to try and break the fix.
-A targeted Sanity / Smoke Regression Checklist for adjacent components that might be affected."
+"تصرّف كمحرر توثيق تقني (Technical Documentation Editor) بخلفية QA. حسّن النص التالي:
+النص الحالي: [INSERT: الصق النص] نوع المستند: [INSERT: دليل استخدام / README / خطوات تشغيل / سياسة] الجمهور المستهدف: [INSERT: مثال: مطور جديد / مستخدم غير تقني] النبرة المطلوبة: [INSERT: رسمية / مبسطة]
+أخرج: (1) النسخة المحسّنة كاملة، (2) جدولًا يوضح أهم التعديلات وسببها (وضوح / اتساق مصطلحات / ترتيب / إيجاز)، (3) أي نقاط غامضة تحتاج توضيحًا من كاتب المستند الأصلي. حافظ على المعنى التقني ولا تضف معلومات جديدة
 
 
-
-
-4. API Testing & Postman Payload Builder
-
-Purpose: Generate JSON request payloads and Postman test scripts for testing REST APIs.
-
+4. مراجعة كود موجود واستخراج ملاحظات (Code Review)
+الغرض: مراجعة جزء من الكود وإخراج ملاحظات مرتبة حسب الأهمية وقابلة للتنفيذ.
 Prompt:
+"تصرّف كمراجع كود (Code Reviewer) بعقلية QA. راجع الكود التالي:
+لغة/إطار العمل: [INSERT: مثال: Laravel / Node.js / Python] الغرض من الكود: [INSERT: وصف مختصر لما يفعله] الكود: [INSERT: الصق الكود بعد حذف أي أسرار أو بيانات حساسة] معايير الفريق (إن وُجدت): [INSERT: مثال: PSR-12 / تسمية معينة]
+أخرج جدولًا بالأعمدة: رقم الملاحظة، الموضع (ملف/سطر)، نوع الملاحظة (منطق / معالجة أخطاء / أمان / قراءة وتسمية / أداء / اتساق)، وصف المشكلة، الاقتراح، والأهمية (يجب إصلاحه / يُفضّل / اختياري). اختم بملخص من 3 أسطر عن الحالة العامة للكود وأبرز نقطة يجب معالجتها أولًا."
 
-"Act as an API QA Tester. I am testing a RESTful API endpoint for [INSERT ENDPOINT PURPOSE, e.g., Profile Update / Order Processing].
-
-Endpoint Docs / Schema: [INSERT ENDPOINT URL, METHOD & PARAMETERS]
-
-Generate:
-
-Test Payloads (JSON): Happy path, missing required fields, boundary limits, and invalid data types.
-Postman JavaScript Test Snippets: Assertions for HTTP status codes (200/400/401/422), response execution time (< 500ms), and key field validation.
-Auth/Authorization test cases: expired token, missing token, wrong role/permission, malformed header."
-
-
-
-
-
-5. Task & Ticket Requirement Quality Audit
-
-Purpose: Review task requirements (e.g., on Jira/ERP) before sprint execution to spot missing acceptance criteria or edge cases.
-
+5. تلخيص محتوى PR للمراجع
+الغرض: تحويل تغييرات Pull Request إلى ملخص واضح يسهّل على المراجع فهم ما تغيّر وأين يركّز.
 Prompt:
-
-"Act as a QA Analyst reviewing a task ticket before testing.
-
-Task Details: [INSERT ERP/JIRA TASK SPECIFICATIONS OR REQUIREMENTS]
-
-Analyze the task for QA readiness:
-
-Highlight ambiguous requirements, missing edge cases, or unstated assumptions.
-Identify untestable acceptance criteria.
-List clarification questions to ask the Developer or Product Owner before test execution.
-If applicable, convert Acceptance Criteria into Given/When/Then (Gherkin) format."
-
-
-
-
-
-6. Backend Code & Security Risk Assessor
-
-Purpose: Audit backend logic (Laravel / Python / Node.js) for unhandled exceptions, SQL injection, or input validation flaws.
-
-Prompt:
-
-"Act as an Application Security & Backend QA Tester. Analyze the following backend code snippet:
-
-[INSERT CODE HERE]
-
-Tasks:
-
-Identify security risks (e.g., raw SQL string vulnerabilities, unvalidated input execution).
-Point out missing error handling or unexpected unhandled null values.
-Provide specific QA test cases (positive, negative, and exploit payloads) to test this code."
-
-⚠️ Note: Remove any secrets/API keys/customer data from the code before pasting it into any AI tool.
-
-
-
-7. Localization, RTL, & Hydration UI Audit
-
-Purpose: Catch RTL layout breakage, text overlap, and dynamic frontend hydration errors (e.g., Next.js / React console errors).
-
-Prompt:
-
-"Act as a Frontend QA Specialist focused on Arabic (RTL) localization and React/Next.js UI rendering.
-
-UI Spec / Console Error / Code: [INSERT CONSOLE HYDRATION ERROR OR UI COMPONENT SPEC]
-
-Provide:
-
-Analysis of potential cause for layout breaking, text overlap, or hydration mismatches.
-Checklist for verifying text alignment, icon mirroring, and font responsiveness in Arabic (RTL) vs English (LTR).
-Specific cross-browser and cross-device testing steps."
-
-
-
-
-
-8. Regression Testing Scope Checklist
-
-Purpose: Build a targeted regression testing checklist based on sprint release notes or code changes.
-
-Prompt:
-
-"Act as a QA Lead preparing a release regression suite.
-
-Release Notes / Code Changes: [INSERT CHANGELOG OR LIST OF MODIFIED FEATURES]
-
-Generate a targeted Regression Testing Checklist:
-
-High-risk primary workflows that MUST be verified.
-Indirectly impacted modules/features that need sanity checks.
-Suggested smoke test scenarios for staging/production deployment.
-Add a Risk Level column (High/Medium/Low) next to each affected module to support prioritization under time constraints."
-
-
-
-
-9. Exploratory Testing Charter (Time-boxed)
-
-Purpose: Guide unstructured testing sessions to discover hidden edge cases in core app modules.
-
-Prompt:
-
-"Act as an Exploratory QA Specialist. Design a 30-minute Exploratory Testing Charter for:
-
-Module / Feature: [INSERT MODULE, e.g., Multi-step Shift Handover / Course Filter & Search]
-
-Provide:
-
-Clear Objective & Persona.
-Specific Heuristics & Angles to Probe (e.g., network disruption, rapid clicking, session timeouts, extreme input values).
-Areas most likely to hide edge-case bugs."
-
-
-
-
-
-10. Daily QA Execution Status Report
-
-Purpose: Convert raw testing statistics into a clean, executive summary for project stakeholders.
-
-Prompt:
-
-"Act as a QA Specialist. Format the following daily testing progress into a professional summary report:
-
-Execution Data:
-
-Feature Tested: [INSERT FEATURE/MODULE NAME]
-Total Test Cases Executed: [INSERT NUMBER]
-Passed: [NUMBER] | Failed: [NUMBER] | Blocked: [NUMBER]
-Critical/High Bugs Logged: [INSERT BUG TITLES/IDS]
-
-Format a concise report suitable for Slack/Email/ERP comment including: Executive Summary, Current Blockers, Risk Level, and Next Actions."
-
-
-
-
-11. Test Strategy for New Feature (from scratch)
-
-Purpose: Build a test strategy before any code is written, based on risk analysis.
-
-Prompt:
-
-"Act as a QA Lead designing a test strategy for a new feature before development starts.
-
-Feature Brief: [INSERT FEATURE DESCRIPTION, GOALS, USER FLOW] Tech Stack: [INSERT STACK, e.g., Next.js frontend / Laravel backend / Mobile app]
-
-Provide:
-
-Risk Assessment: Highest-risk areas (data integrity, security, performance, UX) and why.
-Test Levels Needed: Unit / Integration / API / UI / Manual exploratory — and where automation adds most value.
-Recommended Tools: Based on the stack given.
-Entry/Exit Criteria: When testing can start and when the feature is "done" from a QA perspective.
-Estimated Effort: Rough time/complexity estimate for QA coverage."
+"تصرّف كمهندس يكتب ملخص Pull Request لمراجع لم يطّلع على السياق. لخّص التغييرات التالية:
+عنوان الـ PR / المهمة: [INSERT: العنوان أو رقم التذكرة] التغييرات (Diff أو قائمة الملفات): [INSERT: الصق الـ Diff أو وصف التعديلات] سبب التغيير: [INSERT: المشكلة أو المتطلب]
+أخرج: ملخصًا في جملتين، ما الذي تغيّر (مقسّمًا حسب الملف أو الوحدة)، لماذا تغيّر، الأجزاء عالية المخاطرة التي يجب على المراجع التركيز عليها، الوحدات المتأثرة بشكل غير مباشر، وكيف يمكن التحقق من التغيير يدويًا."
